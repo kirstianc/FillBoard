@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+
+<!--import necessary script and css lib files--> 
+
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -51,12 +55,12 @@
       <!----------------main-content -------------------->
 
       <div class="main-content">
-        <button onclick="incrementDB()">Click to change Hello to Goodbye</button>
+        <button onclick="changeTest()">Click to change Hello to Goodbye</button>
         
         <p id="test">Hello</p>
 
         <script>
-          function incrementDB(){
+          function changeTest(){
             document.getElementById("test").innerHTML= "Goodbye";
           }
         </script>
@@ -64,18 +68,38 @@
         <br>
 
         <div>
-          <form>
+          <form action="userReg.php" method="post">
 
             <div>
               <label for="username">Username:</label>
-              <input type="text" id="username" name="username" placeholder="Username...">
+              <input type="varchar" name="username" placeholder="Username...">
             </div>
             
             <br>
 
             <div>
               <label for="password">Password:</label>
-              <input type="text" id="password" name="password" placeholder="Password...">
+              <input type="varchar" name="password" placeholder="Password...">
+            </div>
+
+            <br>
+
+            <div>
+              <label for="age">Age:</label>
+              <input type="int4" name="age" placeholder="0...">
+            </div>
+
+            <br>
+
+            <div>
+              <label for="bio">Short bio:</label>
+              <input type="varchar" name="bio" placeholder="Bio...">
+            </div>
+
+            <br>
+            
+            <div>
+              <input type="submit" value="Submit">
             </div>
 
           </form>
