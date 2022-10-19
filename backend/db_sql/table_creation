@@ -1,0 +1,34 @@
+/* create tables */
+CREATE TABLE Category (
+	Category_ID	INTEGER,
+	Name	VARCHAR(50),
+	Description	VARCHAR(50),
+	PRIMARY KEY(Category_ID)
+);
+
+CREATE TABLE Meet (
+	Meet_ID	INTEGER,
+	Name	VARCHAR(50),
+	Description	VARCHAR(50),
+	Date	DATE,
+	Duration	INTEGER,
+	Location VARCHAR(50),
+	Category_ID	INTEGER,
+	Author_ID	VARCHAR(50),
+	PRIMARY KEY(Meet_ID)
+);
+
+CREATE TABLE Participant (
+	Participant_ID	INTEGER,
+	Customer_ID	VARCHAR(50),
+	Meet_ID	INTEGER,
+	PRIMARY KEY(Participant_ID)
+);
+
+CREATE TABLE Customer (
+	Customer_ID	VARCHAR(50),
+	Password	VARCHAR(50),
+	Age	INTEGER,
+	Biography	VARCHAR(50),
+	PRIMARY KEY(Customer_ID)
+);
