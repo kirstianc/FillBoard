@@ -1,18 +1,20 @@
 <?php
-$connect = mysql_connect(“db.bit.io”, “fillboardAdmin”, “v2_3uu93_euPNE7PXsRNKF6pWje8hsBh”);
+include "dbConn.php"; // db connection file
 
-if (!connect){
-    die('Connection Failed: ' . mysql_error());
-    { mysql_select_db(“fillboardAdmin/fillboard”, $connect);
+if(isset($_POST['submit'])){
+    $username=$_POST['username'];
+    $password=$_POST['password'];
+    $bio=$_POST['bio'];
+    $age=$_POST['age'];
 
+    $insert = mysqli_query($db, "INSERT INTO `customer` (`username`, `password`, `bio`, `age`) VALUES ('$username', '$password', '$age', '$bio')");
 
-        $user_info = “INSERT INTO 'customer' (username, password, age, bio) VALUES ('$_POST[username]', '$_POST[password]', '$_POST[age]', '$_POST[bio]')”;
-        if (!mysql_query($user_info, $connect)) {
-            die('Error: ' . mysql_error());
-        }
+    if(!$insert) {
+        echo mysqli_error();
+    } else {
+        echo "User data submitted successfully!";
+    }
+}
 
-        echo “Your information was added to the database.”;
-        
-        mysql_close($connect);
-    } 
+mysqli_close($db);
 ?>
