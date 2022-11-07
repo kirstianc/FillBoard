@@ -2,6 +2,7 @@ var express = require('express');
 var bp = require('body-parser');
 var bcrypt = require('bcrypt');
 var mysql = require('mysql');
+const session = require('express-session');
 
 var app = express();
 var {body, validationResult} = require('express-validator');
@@ -10,6 +11,12 @@ app.set('views', 'views');
 app.set('view engine', 'ejs');
 app.use(bp.json());
 
+// parameters for session (like a user session)
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUnitialized: false
+}));
 app.use('/public', express.static('public'));
 
 var urlParser = bp.urlencoded({extended: false});
@@ -30,7 +37,7 @@ sqlConn.connect((err) => {
 })
 
 app.get('/', (req, res) => {
-    res.render('pages/home')
+    res.render('pages/signup')
 });
 
 app.get('/signup', (req, res) => {
@@ -44,13 +51,13 @@ app.get('/signin', (req, res) => {
 //This is hardcoded for ian username - the value needs to be forwarded in the url propably
 //See in main.ejs how the values are accessed from the query result
 app.get('/main', (req, res) => {
-    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '<%= req.body.';`, function (err, qres, fields) {
+    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
         if(err){
             throw err; 
         }
         else {
             res.render('pages/main', {
-                query_data: qres // this is the data property to access
+                query_data: qres //this is the data property to access
             });
         }
     })
@@ -70,7 +77,6 @@ app.post('/post_text', urlParser,
     }
 });
 
-//an example how to read data from the frontend end read then from the DB
 app.post('/signin', urlParser, 
     body('email').isEmail().withMessage('Must be email!'),
     body('password').notEmpty().withMessage('Password cannot be empty!')
@@ -86,9 +92,8 @@ app.post('/signin', urlParser,
             } else {
                 bcrypt.compare(req.body.password, qres[0]['password']).then((result) => {
                     if(result == true) {
-                        res.redirect('/main', {
-
-                        });
+                        req.session.username=qres[0]['username'];
+                        res.redirect('/main');
                     } else {
                         console.log('Wrong username and password combo!')
                     }
@@ -98,17 +103,17 @@ app.post('/signin', urlParser,
     }
 });
 
-//an example to store data from the frontend to the DB
+//an examle to store data from the frontend to the DB
 app.post('/signup', urlParser,
     body('username').isLength({min:1, max: 45}).withMessage('Username can not be empty!'),
     body('email').isEmail().withMessage('Must be email!'),
     body('password').notEmpty().withMessage('Password cannot be empty!'),
     body('confpassword').notEmpty().custom((pwrd, {req}) => pwrd === req.body.password).withMessage('Both passwords must match!')
  ,(req, res) => {
-    if(req.body.login){
+    var errs = validationResult(req);
+    if(req.body.signin){
         res.redirect('/signin');
-    } else{
-        var errs = validationResult(req);
+    }else{
         if(!errs.isEmpty()) {
             return res.status(400).json({errs: errs.array()})
         } else {
