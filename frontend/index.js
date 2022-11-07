@@ -12,26 +12,32 @@ app.use(bp.json());
 
 app.use('/public', express.static('public'));
 
-app.listen(4000, () => {
-    console.log('Server running on port 4000!');
+// shows which port is listening
+var listener = app.listen(3000, function(){
+    console.log('Listening on port ' + listener.address().port);
 });
+
+/* for some reason localhost:3000 doesn't work here but the above code does
+app.listen(3000, () => {
+    console.log('Server running on port 3000!');
+}); */
 
 var urlParser = bp.urlencoded({extended: false});
 
-//This is the DB Connection - please connection here
+// This is the DB Connection
 var sqlConn = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "Sportyboy33()",
     database: "fillboard"
-})
+});
 
 sqlConn.connect((err) => {
     if(err) console.log(err)
     else  {
         console.log('Successfully connected to SQL database!')
     }
-})
+});
 
 app.get('/', (req, res) => {
     res.render('pages/home')
@@ -47,7 +53,7 @@ app.get('/signin', (req, res) => {
 
 // This is hardcoded for ian username - the value needs to be forwarded in the url probably
 // See in main.ejs how the values are accessed from the query result
-// http://localhost:4000/main?username=ian (there MUST be username = 'ian' in the DB)
+// http://localhost:3000/main?username=ian (there MUST be username = 'ian' in the DB)
 app.get('/main', (req, res) => {
     sqlConn.query(`SELECT * FROM fillboard_user WHERE username = 'ian';`, function (err, qres, fields) {
         if(err){
