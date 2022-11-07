@@ -2,6 +2,7 @@ var express = require('express');
 var bp = require('body-parser');
 var bcrypt = require('bcrypt');
 var mysql = require('mysql');
+const session = require('express-session');
 
 var app = express();
 var {body, validationResult} = require('express-validator');
@@ -9,6 +10,11 @@ var {body, validationResult} = require('express-validator');
 app.set('views', 'views');
 app.set('view engine', 'ejs');
 app.use(bp.json());
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUnitialized: false
+}));
 
 app.use('/public', express.static('public'));
 
@@ -30,7 +36,7 @@ sqlConn.connect((err) => {
 })
 
 app.get('/', (req, res) => {
-    res.render('pages/home')
+    res.render('pages/signup')
 });
 
 app.get('/signup', (req, res) => {
@@ -41,20 +47,18 @@ app.get('/signin', (req, res) => {
     res.render('pages/login')
 });
 
-//This is hardcoded for ian username - the value needs to be forwarded in the url propably
-//See in main.ejs how the values are accessed from the query result
-app.get('/main', (req, res) => {
-    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '<%= req.body.';`, function (err, qres, fields) {
+app.get('/main', (req, res) => {    
+    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
         if(err){
             throw err; 
         }
         else {
             res.render('pages/main', {
-                query_data: qres // this is the data property to access
+                query_data: qres,
             });
         }
-    })
-});
+})});
+    
 
 app.post('/post_text', urlParser,
     body('post_heading').isLength({min:1, max: 45}).withMessage('heading can not be empty'),
@@ -86,9 +90,8 @@ app.post('/signin', urlParser,
             } else {
                 bcrypt.compare(req.body.password, qres[0]['password']).then((result) => {
                     if(result == true) {
-                        res.redirect('/main', {
-
-                        });
+                        req.session.username=qres[0]['username'];
+                        res.redirect('/main');
                     } else {
                         console.log('Wrong username and password combo!')
                     }
