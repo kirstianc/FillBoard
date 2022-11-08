@@ -7,6 +7,8 @@ const session = require('express-session');
 var app = express();
 var {body, validationResult} = require('express-validator');
 
+// text fields for edit profile (value = $qres.name...)
+
 app.set('views', 'views');
 app.set('view engine', 'ejs');
 app.use(bp.json());
@@ -17,6 +19,7 @@ app.use(session({
     resave: false,
     saveUnitialized: false
 }));
+
 app.use('/public', express.static('public'));
 
 var urlParser = bp.urlencoded({extended: false});
@@ -48,9 +51,28 @@ app.get('/signin', (req, res) => {
     res.render('pages/login')
 });
 
-//This is hardcoded for ian username - the value needs to be forwarded in the url propably
-//See in main.ejs how the values are accessed from the query result
+app.get('/profile', (req, res) => {
+    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
+        if(err){
+            throw err; 
+        }
+        else {
+            res.render('pages/profile', {
+                query_data: qres //this is the data property to access
+            });
+        }
+    })
+});
+
+app.post('/profile',(req, res) => {
+    res.redirect('/profile');
+});
+
 app.get('/main', (req, res) => {
+    if(req.body.save){
+        sqlConn.query(`INSERT INTO fillboard_user (birthday, gender, biography) VALUES (${req.body.birthday}, ${req.body.gender}, ${req.body.biography})`);
+        res.render('pages/main');
+    }else{
     sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
         if(err){
             throw err; 
@@ -61,6 +83,11 @@ app.get('/main', (req, res) => {
             });
         }
     })
+}});
+
+app.post('/main', (req,res) => {
+    sqlConn.query(`INSERT INTO fillboard_user (birthday, gender, biography) VALUES (${req.body.birthday}, ${req.body.gender}, ${req.body.biography})`);
+    res.redirect('/main');
 });
 
 app.post('/post_text', urlParser,
@@ -103,7 +130,6 @@ app.post('/signin', urlParser,
     }
 });
 
-//an examle to store data from the frontend to the DB
 app.post('/signup', urlParser,
     body('username').isLength({min:1, max: 45}).withMessage('Username can not be empty!'),
     body('email').isEmail().withMessage('Must be email!'),
