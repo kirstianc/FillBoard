@@ -28,7 +28,7 @@ var urlParser = bp.urlencoded({extended: false});
 var sqlConn = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Sportyboy33()", //might have to change this to your pwd
+    password: "MySQLAdmin", //might have to change this to your pwd
     database: "Fillboard"
 })
 
