@@ -51,28 +51,34 @@ app.get('/signin', (req, res) => {
     res.render('pages/login')
 });
 
-app.get('/profile', (req, res) => {
+app.get('/editProfile', (req, res) => {
     sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
         if(err){
             throw err; 
         }
         else {
-            res.render('pages/profile', {
+            res.render('pages/editProfile', {
                 query_data: qres //this is the data property to access
             });
         }
     })
 });
 
-app.post('/profile',(req, res) => {
-    res.redirect('/profile');
+app.post('/editProfile',(req, res) => {
+    res.redirect('/editProfile');
+});
+
+app.post('/saveProfile', urlParser, body('birthday'),body('gender'),body('biography'),(req, res) => {
+    console.log('/saveProfile');
+    console.log(`req.body.birthday = '${req.body.birthday}'`);
+    console.log(`req.body.gender = '${req.body.gender}'`);
+    console.log(`req.body.biography = '${req.body.biography}'`);
+    sqlConn.query(`UPDATE fillboard_user SET birthday='${req.body.birthday}', gender='${req.body.gender}', biography='${req.body.biography}' WHERE username='${req.session.username}'`);
+    console.log('updated bday + gender + bio');
+    res.redirect('/main');
 });
 
 app.get('/main', (req, res) => {
-    if(req.body.save){
-        sqlConn.query(`INSERT INTO fillboard_user (birthday, gender, biography) VALUES (${req.body.birthday}, ${req.body.gender}, ${req.body.biography})`);
-        res.render('pages/main');
-    }else{
     sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
         if(err){
             throw err; 
@@ -83,10 +89,17 @@ app.get('/main', (req, res) => {
             });
         }
     })
-}});
+});
 
 app.post('/main', (req,res) => {
-    sqlConn.query(`INSERT INTO fillboard_user (birthday, gender, biography) VALUES (${req.body.birthday}, ${req.body.gender}, ${req.body.biography})`);
+    sqlConn.query(`SELECT * FROM fillboard_user WHERE username = '${req.session.username}';`, function (err, qres, fields) {
+        if(err){
+            throw err; 
+        }
+        else {
+            req.session.qres=qres;
+        }
+    })
     res.redirect('/main');
 });
 
@@ -119,6 +132,7 @@ app.post('/signin', urlParser,
             } else {
                 bcrypt.compare(req.body.password, qres[0]['password']).then((result) => {
                     if(result == true) {
+                        req.session.qres=qres;
                         req.session.username=qres[0]['username'];
                         res.redirect('/main');
                     } else {
@@ -128,6 +142,10 @@ app.post('/signin', urlParser,
             }
         })
     }
+});
+
+app.post('/logout', (req,res) => {
+    res.redirect('/signup');
 });
 
 app.post('/signup', urlParser,
