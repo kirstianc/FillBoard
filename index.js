@@ -16,6 +16,12 @@ app.use(session({
     saveUnitialized: false
 }));
 
+// parameters for session (like a user session)
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUnitialized: false
+}));
 app.use('/public', express.static('public'));
 
 var urlParser = bp.urlencoded({extended: false});
@@ -74,7 +80,6 @@ app.post('/post_text', urlParser,
     }
 });
 
-//an example how to read data from the frontend end read then from the DB
 app.post('/signin', urlParser, 
     body('email').isEmail().withMessage('Must be email!'),
     body('password').notEmpty().withMessage('Password cannot be empty!')
@@ -101,17 +106,17 @@ app.post('/signin', urlParser,
     }
 });
 
-//an example to store data from the frontend to the DB
+//an examle to store data from the frontend to the DB
 app.post('/signup', urlParser,
     body('username').isLength({min:1, max: 45}).withMessage('Username can not be empty!'),
     body('email').isEmail().withMessage('Must be email!'),
     body('password').notEmpty().withMessage('Password cannot be empty!'),
     body('confpassword').notEmpty().custom((pwrd, {req}) => pwrd === req.body.password).withMessage('Both passwords must match!')
  ,(req, res) => {
-    if(req.body.login){
+    var errs = validationResult(req);
+    if(req.body.signin){
         res.redirect('/signin');
-    } else{
-        var errs = validationResult(req);
+    }else{
         if(!errs.isEmpty()) {
             return res.status(400).json({errs: errs.array()})
         } else {
