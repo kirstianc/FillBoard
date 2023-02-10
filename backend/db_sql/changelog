@@ -1,7 +1,0 @@
-version 4 - 10/9/2022
-- moved creation of foreign key constraints to secondary set of commands
-	to prevent errors (ALTER TABLE)
-- replace all 'Customer' with 'Customer' bc Postgresql has 'Customer' reserved
-	for special commands
-- changed Date type from DATETIME to DATE
-- adjusted ALTER TABLE command for Participant to prevent errors (used ADD CONSTRAINT)

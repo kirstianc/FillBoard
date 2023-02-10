@@ -1,34 +1,283 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport content =" width="device-width," initial-scale="1.0" />
-        <title>Main Dashboard</title>
-        <link href= "/public/stylesheets/style.css" rel="stylesheet" type="text/css" />
-    </head>
-    <body>
-        <h1>Main Dashboard</h1>
-        <p>Hi <%= query_data[0]['username'] %>, welcome to your Dashboard.</p>
-        <p>The email tied to this account is: <%= query_data[0]['email'] %></p>
 
-        <br>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FILLBOARD MAIN</title>
+    <link href="/public/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <link href="/public/stylesheets/hover_button.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="/public/stylesheets/images/favicon.png">
+</head>
 
-        <h2>Create a post?</h2>
-        <div class="post-input-container">
-            <form action="/post_text" method="POST">
-                <label for="post_heading">Post Title:</label><br>
-                <input type="post_heading" name="post_heading" id="post_heading">
+<body>
+    <%- include('../../functions') %>
+    <div class="main-header">
+        <nav>
+            <div class="nav-left">
+                <img src="/public/stylesheets/images/logo3.png" class="main-logo" />
+                <ul>
+                    <!-- <li><img src="/public/stylesheets/images/inbox.png"></li> -->
+
+
+                </ul>
+            </div>
+
+            <div class="nav-center">
+                <form action="/search_for_events_main" method="POST">
+                    <div class="search-box">
+                        <img src="/public/stylesheets/images/search.png" class="search" />
+                        <input type="text" name="eventname" id="eventname" placeholder="Search Event">
+                    </div>
+                </form>
                 
-                <br><br>
+            </div>
+            <div class="nav-right">
+                <ul>
+                    <li>
+                        <div class="user-pf-post">
+                            <img src="/pfp.png" width="10px" height="10px" class="user-pf-post-img" />
+
+                        </div>
+                    </li>
+                    <li>
+                        <div class="nav-drop">
+                            <div class="dropdown">
+                                <button onclick="myFunction()" class="dropbtn">MENU</button>
+                                <div id="myDropdown" class="dropdown-content">
+                                    <a href="/profile">My Profile</a>
+
+                                    <a href="/signup">Sign Out </a>
+                                    <a href="/aboutus">About US</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <script>
+                    /* When the user clicks on the button, 
+                              toggle between hiding and showing the dropdown content */
+                    function myFunction() {
+                        document.getElementById("myDropdown").classList.toggle("show");
+                    }
+
+                    // Close the dropdown if the user clicks outside of it
+                    window.onclick = function (e) {
+                        if (!e.target.matches(".dropbtn")) {
+                            var myDropdown = document.getElementById("myDropdown");
+                            if (myDropdown.classList.contains("show")) {
+                                myDropdown.classList.remove("show");
+                            }
+                        }
+                    };
+                </script>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <!-- left column-->
+        <div class="main-left-col">
+            <div class="main-profile-box">
+                <div class="main-left-col-title"></div>
+                <div class="welcome-msg">
+                    <p>WELCOME <%= user_data[0]['username'] %> !</p>
+                    <br />
+                    <p>I knew you were coming.</p>
+                    <br>
+                    <p>Logged In Account: <%= user_data[0]['email'] %>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- center column-->
+        <div class="main-center-col">
+            <div class="main-center-box">
+                <div class="write-post-container">
+                    <div class="user-pf-post">
+                        <ul>
+                        <li><img src="<%= '/pfp/' +user_data[0]['id_fillboard_user']%>.png" class="user-pf-post-img" /></li>
+                        <li>
+                            <div class="post-msg">
+                            
+                                <%= user_data[0]['username'] %> , What's on your mind?
+                            
+                            <br />
+                        </div>
+                        </li>
+                    </ul>
+                    </div>
+
+                    <div class="post-input-container">
+                        <div class="post-btn-container">
+                            <form action="/post_text" method="POST">
+                                <div class="post-msg-heading">
+                                    
+                                </div>
+                                <textarea class="textarea" rows="2" cols="70" placeholder="TITLE" type="post_heading"
+                                    name="post_heading" id="post_heading"></textarea><br />
+                                <div class="post-msg-text">
+                                    
+                                </div>
+                                <textarea class="textarea" rows="6" cols="70" placeholder="EXPRESS YOURSELF"
+                                    type="post_text" name="post_text" id="post_text"></textarea>
+                                <input list="events" name="post_event" id="post_event" placeholder="Event">
+                                <datalist id="events">
+                                    <% for (var i=0; i < events_participated.length; i++) { %>
+                                        <a></a>
+                                        <option value="<%= events_participated[i]['event_name'] %>">
+                                            <% } %>
+                                </datalist>
+                                <br><br>
+                                <div class="post-btn">
+                                    <input type="submit" style="background-color: hsl(351, 4%, 66%)" value="Post" />
+                                </div>
+                            </form>
+                            <form action="/post_img" method="POST" enctype="multipart/form-data">
+                                <div class="post-img-up-btn">
+                                    <input type="file" accept="image/png" name="fileToUpload" id="fileToUpload">
+                                    <input type="submit" style="background-color: hsl(351, 4%, 66%)"
+                                        value="UPLOAD IMG" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% var rowSize=post_data.length; for (var i=0; i < rowSize; i++) { %>
+                <div class="main-center-box">
+                    <div class="write-post-container">
+                        <div class="post-input-container">
+                            
+                            
+                            <div class="user-pf-post">
+                                <ul>
+                                    <li>
+                                <img src="<%= '/pfp/' +post_data[i]['user_id_posts']%>.png"
+                                    class="user-pf-post-img" />
+                                </li>
+                                <li>  
+                                    <div class="post-msg-created">
+                                    
+                                        <%= post_data[i]['username'] %> said <%= post_data[i]['heading'] %>
+                                    </div>
+                                </li>
+                                   
+                               
+                                </li>
+                                    <br>                                    
                                 
-                <label for="post_text">Post Description:</label><br>
-                <textarea rows="8" placeholder="What is this post about?" type="post_text" name="post_text" id="post_text"></textarea>
+                                </ul>
+                            </div>
+
+                            <img src="<%= '/post_picture/' + post_data[i]['post_picture_path']%>" onerror="this.style.display = 'none';"width="100%" height="100%"><br><br>
+
+                            <!-- <textarea readonly class="textarea" rows="6" cols="70" type="post_text" name="post_text"
+                                id="post_text"><%= post_data[i]['post_text'] %></textarea> -->
+
+                                <div class="post-text">
+                                    <p>
+                                        <%= post_data[i]['post_text'] %>
+                                    </p>
+                                </div>
+
+
+
+                            <div class="post-msg-heading">
+                                <label>Event: <%= post_data[i]['event_name'] %></label><br>
+                                <label>Date: <%= changeDateFormat(post_data[i]['begin_date']) %></label><br>
+                                <!-- <label>To: <%= changeDateFormat(post_data[i]['end_date']) %></label><br> -->
+                            </div>
+
+                            <div class="comments">
+                                <% var numComments=post_data[i].comments && post_data[i].comments.length || 0; for (var
+                                    c=0; c < numComments; c++) {%>
+                                    <div class="post-comment-heading">
+                                        
+                                        <div class="comment_user"><img src="/public/stylesheets/images/rsz_comment.png" style="color: #328bc7"><b><%= post_data[i].comments[c]['username'] %></b> - <%= post_data[i].comments[c]['comments_text'] %>
+                                        </div><br>
+                                        
+
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="post-comment-heading">
+                                <form action="/comments_text" method="POST">
+                                    <textarea class="textarea" rows="2" cols="70" placeholder="Leave a comment!"
+                                        type="text" name="comments_text" id="comments_text"></textarea><br>
+                                    <div class="comments-btn">
+                                        <input type="hidden" name="idposts" value="<%= post_data[i]['idposts']%>" />
+                                        <input type="submit" style="background-color: hsl(351, 4%, 66%)"
+                                            value="REPLY" />  
+                                    </div><br><br>
+                                </form>
+                            </div>
+                        </div>   
+                        <form action="<%= '/deletePost/' + post_data[i]['idposts']%>">
+                            <div class="post-delete">
+                                <input type="submit" style= "background-color: hsl(351, 4%, 66%);"
+                                    value="DELETE" />
+                            </div>
+                        </form>  
+                    </div>
+
+                  
+                </div>
                 
-                <br><br>
-                
-                <input type="submit" value="Post">
-            </form>
+                <% } %>
+
+        </div>
+        <div class="main-right-col">
+            <div class="right-sidebar">
+                <div class="sidebar-title">
+                    <h3>Suggested Events</h3>
+                    <a href="#">
+                        <form action="/main_to_event" method="POST">
+                            <input type="submit" value="See ALL" />
+                        </form>
+                    </a>
+                </div>
+            </div>
+
+            <% for (var i=0; i < event_data.length; i++) { 
+                if(i > 1){
+                    break;
+                } %>
+                <div class="event">
+                    <div class="main-event-box">
+                        <div class="post-input-container">
+                            <div class="post-event-heading">
+                                <span class="bolded"><label for="post_heading"><%= event_data[i]['event_name'] %></label></span><br>
+                                <p>DATE: <%= changeDateFormat(event_data[i]['begin_date']) %></p>
+                                <label for="post_heading"><%= event_data[i]['description'] %></label><br>
+                                <a href="#">More Info</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            <% } %>
+                <div class="right-sidebar">
+                    <div class="sidebar-title">
+                        <h3>Advertisement</h3>
+                        <a href="#"></a>
+                    </div>
+                    <img src="/public/stylesheets/images/gg2.png" class="sidebar-ads">
+                    <br>
+                    <img src="/public/stylesheets/images/gg3.png" class="sidebar-ads">
+                </div>
+
+            </div>
         </div>
 
-        
-    </body>
+        <div id='wrapper'>
+            <div>
+                <p1> FillBoard 2022</p1>
+            </div>
+        </div>
+        <footer></footer>
+</body>
+
 </html>

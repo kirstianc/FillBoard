@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FILLBOARD PROFILE</title>
+        <link href="/public/stylesheets/style.css" rel="stylesheet" type="text/css" />
+        <link rel="icon" href="/public/stylesheets/images/favicon.png">
+    </head>
+    <body>
+        <%- include('../../functions') %>
+        <div class="main-header">
+            <nav>
+                <div class="nav-left">
+                    <img src="/public/stylesheets/images/logo3.png" class="main-logo" />
+                </div>
+
+                <div class="nav-center">
+                   
+                </div>
+                <div class="pf-nav-right">
+                    <div class="user-pf-post">
+                       
+                    <img src="/pfp.png" class="user-pf-post-img" />
+                </div>
+                    <form action="/profile_to_main" method="POST">
+                    <div class="main-pf-edit-btn">
+                        <input type="submit" style="background-color: hsl(351, 4%, 66%)"
+                            value="Back to Main"></button>
+                        
+                    </div>
+                    </form>
+                </div>
+            </nav>
+
+            <div class="main-container">
+                <!-- left column-->
+                <div class="pf-left-col">
+                    <h3 style="color: white;">Your upcoming events: </h3><br>
+                    <% for (var i=0; i < event_data.length; i++) { %>
+                        <div class="event">
+                            <div class="main-event-box">
+                                <div class="post-input-container">
+                                    <div class="post-event-heading">
+                                        <span class="bolded"><label for="post_heading"><%= event_data[i]['event_name'] %></label></span>
+                                        <br><br>
+                                        <p><b>DATE:</b> <%= changeDateFormat(event_data[i]['begin_date']) %></p><br>
+                                        <p><%= event_data[i]['description'] %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    <% } %>
+                    
+                </div>
+                <div class="pf-center-col">
+                    <div class="pf-wallpaper">
+                    <img src="/background.png" class="main-pf" onerror="this.style.display = 'none';"/><br>
+                    
+                </div><br>
+                <div class="pf-about-me-label">
+                <p>ABOUT ME</p>
+                </div>
+                <div class="pf-about-me">
+                <div class="pf-about-msg">
+
+                        <br>
+                    
+                        
+                    <p class="p4"><%= user_data[0]['biography'] %></p><br>
+                    
+                </div>
+                </div>
+                </div>
+                <div class="pf-right-col">
+                    <div class="pf-right-box">
+                        <div class="main-left-col-title">
+                        </div>
+                        <div class="welcome-msg">
+
+                            <p><%= user_data[0]['username'] %></p><br>
+                           
+                            <p>Logged In Account: <%= user_data[0]['email'] %>
+                            </p><br>
+
+                          
+                            <img src="/pfp.png" class="main-pf" /><br><br>
+                           
+                          
+                            <h4>GENDER: </h5>
+                            <p><%= user_data[0]['gender'] %></p><br>
+                            <h4>BIRTHDAY: </h5>
+                            <p><%= user_data[0]['birthday'] %></p><br>
+                           
+
+                            <div class="pf-btn-box"> 
+                                <form action="/editProfile" method="POST">
+                                    <div class="pf-top-signout-btn">
+                                        <input type="submit" style="background-color: hsl(351, 4%, 66%)"
+                                            value="Edit Profile"></button>
+                                    </div>       
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </body>
+</html>
